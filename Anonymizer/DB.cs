@@ -7,9 +7,13 @@ namespace Anonymizer
 {
     static class DB
     {
-        public static void ReadData(string dbURL, string username, string password)
+        public static List<Data> ReadData(string dbURL, string username, string password)
         {
+            var data = new List<Data>();
 
+
+
+            return data;
         }
     }
 }
