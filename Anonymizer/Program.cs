@@ -2,6 +2,7 @@
 using CsvHelper;
 using System.Collections.Generic;
 using System.IO;
+using MySql.Data.MySqlClient;
 
 namespace Anonymizer
 {
@@ -9,19 +10,27 @@ namespace Anonymizer
     {
         static void Main(string[] args)
         {
-            List<Data> data = DB.ReadData(
-                Utils.ReadLine("Enter the URL of the MySQL database: "),
-                Utils.ReadLine("Enter the DB username: "),
-                Utils.ReadLine("Enter the DB password: "));
-
-            using(var writer = new StreamWriter("data.csv"))
+            try
             {
-                using(var CSVwriter = new CsvWriter(writer))
+                List<Data> data = DB.ReadData(
+                    Utils.ReadLine("Enter the URL of the MySQL database: "),
+                    Utils.ReadLine("Enter the database name: "),
+                    Utils.ReadLine("Enter the DB username: "),
+                    Utils.ReadLine("Enter the DB password: "));
+
+                using(var writer = new StreamWriter("data.csv"))
                 {
-                    CSVwriter.WriteRecords(data);
+                    using(var CSVwriter = new CsvWriter(writer))
+                    {
+                        CSVwriter.WriteRecords(data);
+                    }
                 }
+                Console.WriteLine("Data saved. Output can be found in data.csv in the debug folder.");
             }
-            Console.WriteLine("Data saved. Output can be found in data.csv in the debug folder.");
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
             Console.ReadKey();
         }
     }
