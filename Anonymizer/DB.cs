@@ -4,7 +4,6 @@ using System.Text;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.IO;
-using System.Reflection;
 
 namespace Anonymizer
 {
