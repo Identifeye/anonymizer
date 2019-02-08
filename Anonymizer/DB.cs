@@ -12,6 +12,7 @@ namespace Anonymizer
         public static List<Data> ReadData(string dbURL, string dbName, string username, string password)
         {
             var data = new List<Data>();
+            var ipGeo = new IPGeolocationService();
 
             var connectionString = new MySqlConnectionStringBuilder();
             connectionString.Server = dbURL;
@@ -31,7 +32,7 @@ namespace Anonymizer
                     throw e;
                 }
                 
-                var command = new MySqlCommand(File.ReadAllText("../../../query.sql"), connection);
+                var command = new MySqlCommand(File.ReadAllText("query.sql"), connection);
                 var reader = command.ExecuteReader();
                 while(reader.Read())
                 {
@@ -41,7 +42,7 @@ namespace Anonymizer
                         CharacterName = null,
                         IP = Utils.Hash(reader.GetString(1)),
                         UUID = Utils.Hash(reader.GetString(2)),
-                        IPGeolocation = Utils.Hash(reader.GetString(1)), //TODO
+                        IPGeolocation = Utils.Hash(ipGeo.GetCountry(reader.GetString(1))),
                         IsBanned = reader.GetInt32(4) > 0,
                         ActivePlaytime = reader.GetInt32(3)
                     });
