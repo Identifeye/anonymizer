@@ -9,10 +9,11 @@ namespace Anonymizer
 {
     static class DB
     {
-        public static List<Data> ReadData(string dbURL, string dbName, string username, string password)
+        public static List<Data> ReadData(string dbURL, string dbName, string username, string password, string secretSalt)
         {
             var data = new List<Data>();
             var ipGeo = new IPGeolocationService();
+            var hashService = new HashService(secretSalt);
 
             var connectionString = new MySqlConnectionStringBuilder();
             connectionString.Server = dbURL;
@@ -38,11 +39,11 @@ namespace Anonymizer
                 {
                     data.Add(new Data
                     {
-                        AccountName = Utils.Hash(reader.GetString(0)),
+                        AccountName = hashService.Hash(reader.GetString(0)),
                         CharacterName = null,
-                        IP = Utils.Hash(reader.GetString(1)),
-                        UUID = Utils.Hash(reader.GetString(2)),
-                        IPGeolocation = Utils.Hash(ipGeo.GetCountry(reader.GetString(1))),
+                        IP = hashService.Hash(reader.GetString(1)),
+                        UUID = hashService.Hash(reader.GetString(2)),
+                        IPGeolocation = hashService.Hash(ipGeo.GetCountry(reader.GetString(1))),
                         IsBanned = reader.GetInt32(4) > 0,
                         ActivePlaytime = reader.GetInt32(3)
                     });

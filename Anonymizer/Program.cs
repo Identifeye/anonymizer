@@ -15,7 +15,8 @@ namespace Anonymizer
                     Utils.ReadLine("Enter the URL of the MySQL database: "),
                     Utils.ReadLine("Enter the database name: "),
                     Utils.ReadLine("Enter the DB username: "),
-                    Utils.ReadLine("Enter the DB password: "));
+                    Utils.ReadLine("Enter the DB password: "),
+                    Utils.ReadLine("Enter your secret salt: "));
 
                 using(var writer = new StreamWriter("data.csv"))
                 {
