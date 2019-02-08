@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.IO;
+using System.Reflection;
 
 namespace Anonymizer
 {
@@ -29,25 +31,11 @@ namespace Anonymizer
                     Console.WriteLine("Failed to connect to the database.");
                     throw e;
                 }
-
-                string query =
-                    "SELECT users.Username, knownips.IP, users.UUID, bans.banID, bans.Expiry, bans.UnbanDate, users.ActivePlaytime FROM users " +
-                    "LEFT JOIN knownips ON users.Username = knownips.Username " +
-                    "LEFT JOIN bans ON users.Username = bans.Username";
-
-                var command = new MySqlCommand(query, connection);
+                
+                var command = new MySqlCommand(File.ReadAllText("../../../query.sql"), connection);
                 var reader = command.ExecuteReader();
                 while(reader.Read())
                 {
-                    bool banned = false;
-                    if(!reader.IsDBNull(3)) // This block is called if the BanId value isn't null, meaning that this user has some ban associated with them.
-                    {
-                        //TODO: this won't work. You'll just get every combination of associated IP and ban for a user, each in their own row.
-                        long banExpiry = reader.IsDBNull(4) ? long.MaxValue : reader.GetInt64(4);
-                        long unbanDate = reader.IsDBNull(5) ? long.MaxValue : reader.GetInt64(5);
-                        banned = DateTime.UtcNow.ToFileTimeUtc() < Math.Min(banExpiry, unbanDate);
-                    }
-
                     data.Add(new Data
                     {
                         AccountName = Utils.Hash(reader.GetString(0)),
@@ -55,8 +43,8 @@ namespace Anonymizer
                         IP = Utils.Hash(reader.GetString(1)),
                         UUID = Utils.Hash(reader.GetString(2)),
                         IPGeolocation = Utils.Hash(reader.GetString(1)), //TODO
-                        IsBanned = banned,
-                        ActivePlaytime = reader.GetInt32(6)
+                        IsBanned = reader.GetInt32(4) > 0,
+                        ActivePlaytime = reader.GetInt32(3)
                     });
                 }
             }
