@@ -9,8 +9,12 @@ namespace Anonymizer
 {
     static class DB
     {
-        public static List<Data> ReadData(string dbURL, string dbName, string username, string password, string secretSalt)
+        public static List<Data> ReadData(string dbURL, string dbName, string username, string password)
         {
+            string secretSalt = BCrypt.Net.BCrypt.GenerateSalt();
+            Console.WriteLine($"Saving data using the salt {secretSalt}");
+            Console.WriteLine("Please save this salt if you ever want to parse the results of Identifeye.");
+
             var data = new List<Data>();
             var ipGeo = new IPGeolocationService();
             var hashService = new HashService(secretSalt);
