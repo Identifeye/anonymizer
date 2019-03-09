@@ -6,6 +6,8 @@ namespace Anonymizer
 {
     static class Utils
     {
+        public static Random rng = new Random();
+
         public static string ReadLine(string text)
         {
             Console.Write(text);
@@ -25,6 +27,16 @@ namespace Anonymizer
                 ret += uint.Parse(n);
             }
             return ret;
+        }
+
+        public static int RandomSkewedDist(int average)
+        {
+            int sum = 0;
+            while(rng.Next(average) > 0)
+            {
+                sum++;
+            }
+            return sum;
         }
     }
 }

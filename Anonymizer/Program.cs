@@ -11,11 +11,7 @@ namespace Anonymizer
         {
             try
             {
-                List<Data> data = DB.ReadData(
-                    Utils.ReadLine("Enter the URL of the MySQL database: "),
-                    Utils.ReadLine("Enter the database name: "),
-                    Utils.ReadLine("Enter the DB username: "),
-                    Utils.ReadLine("Enter the DB password: "));
+                List<Data> data = DB.GenerateDummyData();
 
                 using(var writer = new StreamWriter("data.csv"))
                 {
