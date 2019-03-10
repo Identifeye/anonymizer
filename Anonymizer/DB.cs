@@ -10,7 +10,7 @@ namespace Anonymizer
 {
     static class DB
     {
-        public static List<Data> ReadData(string dbURL, string dbName, string username, string password)
+        public static List<Data> ReadData(string dbURL, string dbName, string username, string password, int coresToUse)
         {
             string secretSalt = BCrypt.Net.BCrypt.GenerateSalt();
             Console.WriteLine($"Saving data using the salt {secretSalt}");
@@ -55,8 +55,13 @@ namespace Anonymizer
                 }
             }
 
+            var options = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = coresToUse
+            };
+
             // Using BCrypt on hundreds of thousands of entries is very slow, so we're utilizing all the cores of the machine to make it faster
-            Parallel.ForEach(data, d =>
+            Parallel.ForEach(data, options, d =>
             {
                 d.AccountName = hashService.Hash(d.AccountName);
                 d.IP = hashService.Hash(d.IP);
