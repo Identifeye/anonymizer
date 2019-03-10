@@ -4,6 +4,7 @@ using System.Text;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Anonymizer
 {
@@ -43,16 +44,25 @@ namespace Anonymizer
                 {
                     data.Add(new Data
                     {
-                        AccountName = hashService.Hash(reader.GetString(0)),
+                        AccountName = reader.GetString(0),
                         CharacterName = null,
-                        IP = hashService.Hash(reader.GetString(1)),
-                        UUID = hashService.Hash(reader.GetString(2)),
-                        IPGeolocation = hashService.Hash(ipGeo.GetCountry(reader.GetString(1))),
+                        IP = reader.GetString(1),
+                        UUID = reader.GetString(2),
+                        IPGeolocation = ipGeo.GetCountry(reader.GetString(1)),
                         IsBanned = reader.GetInt32(4) > 0,
                         ActivePlaytime = reader.GetInt32(3)
                     });
                 }
             }
+
+            // Using BCrypt on hundreds of thousands of entries is very slow, so we're utilizing all the cores of the machine to make it faster
+            Parallel.ForEach(data, d =>
+            {
+                d.AccountName = hashService.Hash(d.AccountName);
+                d.IP = hashService.Hash(d.IP);
+                d.UUID = hashService.Hash(d.UUID);
+                d.IPGeolocation = hashService.Hash(d.IPGeolocation);
+            });
 
             return data;
         }
