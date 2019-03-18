@@ -40,8 +40,18 @@ namespace Anonymizer
                 
                 var command = new MySqlCommand(File.ReadAllText("query.sql"), connection);
                 var reader = command.ExecuteReader();
+
+                Console.WriteLine("Reading entries from database...");
+                int counter = 0;
+
                 while(reader.Read())
                 {
+                    counter++;
+                    if(counter % 500 == 0)
+                    {
+                        Console.WriteLine(counter);
+                    }
+
                     data.Add(new Data
                     {
                         AccountName = reader.GetString(0),
@@ -60,9 +70,22 @@ namespace Anonymizer
                 MaxDegreeOfParallelism = coresToUse
             };
 
+            Console.WriteLine("Finished reading data from database. Encrypting data...");
+
+            int count = 0;
+            object countLock = new object();
+            
             // Using BCrypt on hundreds of thousands of entries is very slow, so we're utilizing all the cores of the machine to make it faster
             Parallel.ForEach(data, options, d =>
             {
+                lock(countLock)
+                {
+                    count++;
+                    if(count % 50 == 0)
+                    {
+                        Console.WriteLine($"{count} / {data.Count}");
+                    }
+                }
                 d.AccountName = hashService.Hash(d.AccountName);
                 d.IP = hashService.Hash(d.IP);
                 d.UUID = hashService.Hash(d.UUID);
