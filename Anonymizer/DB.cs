@@ -56,9 +56,9 @@ namespace Anonymizer
                     {
                         AccountName = reader.GetString(0),
                         CharacterName = null,
-                        IP = reader.GetString(1),
-                        UUID = reader.GetString(2),
-                        IPGeolocation = ipGeo.GetCountry(reader.GetString(1)),
+                        IP = reader.IsDBNull(1) ? null : reader.GetString(1),
+                        UUID = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        IPGeolocation = reader.IsDBNull(1) ? null : ipGeo.GetCountry(reader.GetString(1)),
                         IsBanned = reader.GetInt32(4) > 0,
                         ActivePlaytime = reader.GetInt32(3)
                     });

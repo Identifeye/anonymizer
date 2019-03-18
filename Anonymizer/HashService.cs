@@ -15,6 +15,7 @@ namespace Anonymizer
 
         public string Hash(string plaintext)
         {
+            if(plaintext == null) return null;
             // We are cutting off the salt from the result because we do not want nor need it. You can now only crack any data if you have the salt yourself.
             // Prevents non-server people from looking up hashes for known usernames and checking for a relation.
             return BCrypt.Net.BCrypt.HashPassword(plaintext, SecretSalt).Substring(SecretSalt.Length);
