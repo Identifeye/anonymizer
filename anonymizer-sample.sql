@@ -1,3 +1,5 @@
+# Run this code to get a small sample set of data to pass through to the anonymizer
+
 CREATE DATABASE  IF NOT EXISTS `identifeye_test` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `identifeye_test`;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
